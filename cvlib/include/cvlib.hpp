@@ -98,6 +98,19 @@ class corner_detector_fast : public cv::Feature2D
             cyclic_buffer.push_back(*it);
     }
 
+    /// \see Feature2d::compute
+    virtual void compute(cv::InputArray image, std::vector<cv::KeyPoint>& keypoints, cv::OutputArray descriptors) override;
+
+    /// \see Feature2d::detectAndCompute
+    virtual void detectAndCompute(cv::InputArray image, cv::InputArray mask, std::vector<cv::KeyPoint>& keypoints, cv::OutputArray descriptors,
+                                  bool useProvidedKeypoints = false) override;
+
+    /// \see Feature2d::getDefaultName
+    virtual cv::String getDefaultName() const override
+    {
+        return "FAST_Binary";
+    }
+
     private:
     int m_threshold; // порог
     int m_num_point; // число найденых точек

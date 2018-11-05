@@ -61,9 +61,10 @@ void put_fps_text(cv::Mat& image, fps_counter& fps, cv::Scalar color /*= (255, 0
 {
     const auto txtFont = CV_FONT_HERSHEY_SIMPLEX;
     const auto fontScale = 0.5;
-    const auto thickness = 1;
+    const auto thickness = 2;
     static const cv::Size textSize = cv::getTextSize("fps: 19.127", txtFont, fontScale, thickness, nullptr);
-    static const cv::Point textOrgPoint = {image.size().width / 2 - textSize.width / 2, image.size().height - 5};
+    // static const cv::Point textOrgPoint = {image.size().width / 2 - textSize.width / 2, image.size().height - 5};
+    static const cv::Point textOrgPoint = {5, 40};
 
     std::stringstream ss;
     ss.precision(5);
@@ -79,7 +80,8 @@ void put_num_corners_text(cv::Mat& image, int num_corners, cv::Scalar color /*= 
     const auto fontScale = 0.5;
     const auto thickness = 2;
     static const cv::Size textSize = cv::getTextSize("Corners: 100000", txtFont, fontScale, thickness, nullptr);
-    static const cv::Point textOrgPoint = {image.size().width - textSize.width, image.size().height - 10};
+    // static const cv::Point textOrgPoint = {image.size().width - textSize.width, image.size().height - 10};
+    static const cv::Point textOrgPoint = {5, 20};
 
     std::stringstream ss;
     ss.precision(5);
