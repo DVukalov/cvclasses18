@@ -51,7 +51,6 @@ int demo_corner_detector(int argc, char* argv[])
         cv::drawKeypoints(frame, corners, frame, cv::Scalar(0, 0, 255));
         utils::put_fps_text(frame, fps, cv::Scalar(125, 225, 0));
         utils::put_num_corners_text(frame, detector->getNumPoint(), cv::Scalar(125, 225, 0));
-        // \todo add count of the detected corners at the top left corner of the image. Use green text color.
         cv::imshow(demo_wnd, frame);
     }
 

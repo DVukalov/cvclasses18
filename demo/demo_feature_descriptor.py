@@ -4,6 +4,7 @@
 
 import os
 import sys
+
 import json
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ def get_distances(values, cols):
   descr = []
   for i in range(0, int(len(values) / cols)):
     descr.append([values[i * cols : (i + 1) * cols]])
-
+# добавить расстояние хэмминга
   for i in range(0, len(descr)):
     for j in range(i+1, len(descr)):
       d.append(np.linalg.norm(np.array(descr[i]) - np.array(descr[j])))
@@ -24,9 +25,8 @@ def get_distances(values, cols):
 
 def compare_descriptors(filename):
   data = dict()
-  with open(filename) as f:
-    data = json.load(f)
-
+  with open(filename, 'r+', encoding=('UTF-8')) as f:
+    data = json.loads(f.read())
   hist_data = dict()
   for key, val in data.items():
     hist_data[key] = get_distances(val["data"], val["cols"])
