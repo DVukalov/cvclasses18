@@ -48,6 +48,7 @@ int demo_feature_descriptor(int argc, char* argv[])
         
 
         pressed_key = cv::waitKey(30);
+        // \todo draw histogram of SSD distribution for all descriptors instead of dumping into the file
         if (pressed_key == ' ') // space
         {
             cv::FileStorage file("descriptor.json", cv::FileStorage::WRITE | cv::FileStorage::FORMAT_JSON);

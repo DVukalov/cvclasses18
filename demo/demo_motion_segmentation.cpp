@@ -11,8 +11,8 @@
 
 int demo_motion_segmentation(int argc, char* argv[])
 {
-    // const cv::String filename = "D:/ClangFormat/Video2.mp4";
-    const int filename = 0;
+    const cv::String filename = "D:/Документы/11\ semester/u131045/ComputerVision/lab1/cvclasses18/Video/TestVideo.mp4";
+    // const int filename = 0;
     // cv::VideoCapture cap(0);
     cv::VideoCapture cap(filename);
     if (!cap.isOpened())
