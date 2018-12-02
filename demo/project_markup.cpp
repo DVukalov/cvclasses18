@@ -61,4 +61,3 @@ int project_markup(int argc, char* argv[])
 
     return 0;
 }
-

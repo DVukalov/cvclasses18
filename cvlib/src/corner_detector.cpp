@@ -26,6 +26,9 @@ void corner_detector_fast::detect(cv::InputArray image, CV_OUT std::vector<cv::K
     cv::Size image_size = image.size();
     cv::Mat imag = image.getMat();
 
+    if (imag.channels() == 3)
+        cv::cvtColor(imag, imag, cv::COLOR_BGR2GRAY);
+
     std::vector<int> etalon_1(12);
     std::vector<int> etalon_2(12);
     std::fill(etalon_1.begin(), etalon_1.end(), 1);
