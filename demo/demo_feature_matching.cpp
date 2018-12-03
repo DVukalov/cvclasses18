@@ -11,7 +11,7 @@
 
 void on_ratio_changed(int value, void* ptr)
 {
-    ((cvlib::descriptor_matcher*)(ptr))->set_ratio(float(value / 10));
+    ((cvlib::descriptor_matcher*)(ptr))->set_ratio(float(1 - value / 100));
 }
 
 int demo_feature_matching(int argc, char* argv[])
@@ -36,8 +36,8 @@ int demo_feature_matching(int argc, char* argv[])
     detector->setVarThreshold(20);
     auto matcher = cvlib::descriptor_matcher(1.2f); //\todo add trackbar to demo_wnd to tune ratio value
 
-    int ratio = 12;
-    cv::createTrackbar("ratio SSD", demo_wnd, &ratio, 100, on_ratio_changed, (void*)&matcher);
+    int ratio = 10;
+    cv::createTrackbar("ratio SSD", demo_wnd, &ratio, 50, on_ratio_changed, (void*)&matcher);
 
     /// \brief helper struct for tidy code
     struct img_features

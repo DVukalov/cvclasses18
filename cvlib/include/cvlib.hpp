@@ -8,9 +8,9 @@
 #ifndef __CVLIB_HPP__
 #define __CVLIB_HPP__
 
+#include <algorithm>
 #include <opencv2/opencv.hpp>
 #include <vector>
-
 namespace cvlib
 {
 /// \brief Split and merge algorithm for image segmentation
