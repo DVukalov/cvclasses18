@@ -172,8 +172,17 @@ class descriptor_matcher : public cv::DescriptorMatcher
 /// \brief Stitcher for merging images into big one
 class Stitcher
 {
-    /// \todo design and implement
+public:
+	Stitcher(){}
+
+	/// \brief aplly image stitcher algorithm to src and stored image
+	//void apply(const cv::Mat& src, cv::Mat& dst);
+    void Stitcher::stichedImage(const cv::Mat& frame1, const std::vector<cv::KeyPoint>& frame1Corners, const cv::Mat& frame2,
+                                const std::vector<cv::KeyPoint>& frame2Corners, const std::vector<std::vector<cv::DMatch>>& pairs, cv::Mat& stitchedImg);
+
+    //cv::Mat mPanoram;
 };
+
 } // namespace cvlib
 
 #endif // __CVLIB_HPP__
