@@ -177,9 +177,19 @@ public:
 
 	/// \brief aplly image stitcher algorithm to src and stored image
 	//void apply(const cv::Mat& src, cv::Mat& dst);
-    void Stitcher::stichedImage(const cv::Mat& frame1, const std::vector<cv::KeyPoint>& frame1Corners, const cv::Mat& frame2,
-                                const std::vector<cv::KeyPoint>& frame2Corners, const std::vector<std::vector<cv::DMatch>>& pairs, cv::Mat& stitchedImg);
+    void stichedImage(const cv::Mat &frame1, const std::vector<cv::KeyPoint>& frame1Corners, const cv::Mat& frame2,
+        const std::vector<cv::KeyPoint>& frame2Corners, const std::vector<std::vector<cv::DMatch>>& pairs, cv::Mat& stitchedImg);
 
+    void stitch(std::vector<cv::KeyPoint> frame1Corners, std::vector<cv::KeyPoint>& frame2Corners, const cv::Mat& frame1Descriptors,
+        cv::Mat& frame2Descriptors, cv::Mat& frame2);
+
+    void transformKeyPoints(std::vector<cv::KeyPoint>& keypoints);
+    bool m_isStitched;
+private:
+    cv::Mat H;
+    int c, f;
+    //bool m_isStitched;
+    cv::Mat m_stitching_image;
     //cv::Mat mPanoram;
 };
 

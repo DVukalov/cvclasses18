@@ -13,18 +13,140 @@ namespace cvlib
 void Stitcher::stichedImage(const cv::Mat &frame1, const std::vector<cv::KeyPoint>& frame1Corners, const cv::Mat& frame2,
     const std::vector<cv::KeyPoint>& frame2Corners, const std::vector<std::vector<cv::DMatch>>& pairs, cv::Mat& stitchedImg)
     {
-
-        std::vector <cv::Point2f> point1, point2;
+        m_isStitched = false;
+        std::vector<cv::Point2f> point1, point2;
 
         for (auto i = 0; i < pairs.size(); i++)
         {
-            point1.push_back(frame1Corners[pairs[i][0].queryIdx].pt);
-            point2.push_back(frame2Corners[pairs[i][0].trainIdx].pt);
+            if (pairs[i].size() > 0)
+            {
+                point1.push_back(frame1Corners[pairs[i][0].queryIdx].pt);
+                point2.push_back(frame2Corners[pairs[i][0].trainIdx].pt);
+            }
+        }
+
+        H = cv::findHomography(point2, point1, cv::RANSAC);
+
+        std::cout << "H:\n";
+        for (int i = 0; i < H.size().width; i++)
+        {
+            for (int j = 0; j < H.size().height; j++)
+            {
+                std::cout << (double)H.at<double>(i, j) << "\t";
+            }
+            std::cout << "\n";
+        }
+
+        if (!H.empty())
+        {
+            // смещение по осям
+            c = H.at<double>(0, 2);
+            f = H.at<double>(1, 2);
+
+           ///* if (c < 0 && f < 0)
+           //     H = H.inv();*/
+
+           // // найдем прямоугольник
+           // cv::Rect frameRect = cv::boundingRect(point1);
+           // 
+           // // выберем 4 точки, которые являются вершинами данного прямоугольника
+           // std::vector<cv::Point2f> rectCorners(4);
+           // rectCorners.push_back(cv::Point2f(frameRect.x, frameRect.y));
+           // rectCorners.push_back(cv::Point2f(frameRect.x + frameRect.width, frameRect.y));
+           // rectCorners.push_back(cv::Point2f(frameRect.x + frameRect.width, frameRect.y + frameRect.height));
+           // rectCorners.push_back(cv::Point2f(frameRect.x, frameRect.y + frameRect.height));
+
+           // // вычисляем гомографию 4x точек
+           // std::vector<cv::Point2f> homographyCorners(4);
+           // cv::perspectiveTransform(rectCorners, homographyCorners, H);
+
+            // получаем размеры исходного изображения
+            cv::Size size = frame2.size();
+            if (c >= 0 && f >= 0)
+            {
+                size.width += c;
+                size.height += f;
+
+                cv::warpPerspective(frame2, m_stitching_image, H, size);
+
+                frame1.copyTo(m_stitching_image.rowRange(0, frame1.rows).colRange(0, frame1.cols));
+                m_isStitched = true;
+            }
+
+            if (c < 0 && f < 0)
+            {
+                size.width -= c;
+                size.height -= f;
+
+                cv::warpPerspective(frame1, m_stitching_image, H, size);
+
+                frame2.copyTo(m_stitching_image.rowRange(0, frame2.rows).colRange(0, frame2.cols));
+                m_isStitched = true;
+            }
+
+            //stitchedImg.copyTo(stitchedImg);
+
+            if (m_isStitched)
+            {
+                m_stitching_image.copyTo(stitchedImg);
+                //stitch(frame1Corners, frame2Corners, frame1Descriptors, frame2Descriptors, frame2.im);
+            }
+               
+            else
+                frame2.copyTo(stitchedImg);
+            // вычисляем гомографию
         }
 
 
-        stitchedImg = frame1.clone();
+
+        //stitchedImg = frame1.clone();
     }
+
+void Stitcher::stitch(std::vector<cv::KeyPoint> frame1Corners, std::vector<cv::KeyPoint>& frame2Corners, const cv::Mat& frame1Descriptors,
+    cv::Mat& frame2Descriptors, cv::Mat& frame2)
+{
+    if (m_isStitched)
+    {
+        std::vector<cv::KeyPoint> transformCorners;
+        if (c >= 0 && f >= 0)
+        {
+            transformKeyPoints(frame2Corners);
+            //cv::transform(frame2Corners, frame2Corners, H);
+            //cv::perspectiveTransform(frame2Corners, transformCorners, H);
+        }
+        else if (c < 0 && f < 0)
+        {
+            transformKeyPoints(frame1Corners);
+            //cv::transform(frame1Corners, frame1Corners, H);
+            //cv::perspectiveTransform(frame1Corners, transformCorners, H);
+        }
+
+        frame2Corners.insert(frame2Corners.end(), frame1Corners.begin(), frame1Corners.end());
+        cv::vconcat(frame2Descriptors, frame1Descriptors, frame2Descriptors);
+        m_stitching_image.copyTo(frame2);
+    }
+
+
+}
+
+
+void Stitcher::transformKeyPoints(std::vector<cv::KeyPoint>& keypoints)
+{
+    cv::Mat_<double> P(3, 1);
+    for (int i = 0; i < keypoints.size(); i++)
+    {
+        P(0, 0) = keypoints[i].pt.x;
+        P(1, 0) = keypoints[i].pt.y;
+        P(2, 0) = 1.0;
+
+        P = H * P;
+        //cv::perspectiveTransform(P, P, H);
+            //m_homography * P;
+
+        keypoints[i].pt.x = P(0, 0) / P(2, 0);
+        keypoints[i].pt.y = P(1, 0) / P(2, 0);
+    }
+}
 /*
 void Stitcher::apply(const cv::Mat& src, cv::Mat& dst)
 {

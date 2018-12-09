@@ -24,6 +24,7 @@ int demo_image_stitching(int argc, char* argv[])
 
     const auto main_wnd = "orig";
     const auto demo_wnd = "demo";
+    const auto test_wnd = "test";
 
     cv::namedWindow(main_wnd);
     cv::namedWindow(demo_wnd);
@@ -95,7 +96,8 @@ int demo_image_stitching(int argc, char* argv[])
             }
             else
             {
-                //stitcher.stitch(frame1.corners, frame2.corners, frame1.descriptors, frame2.descriptors, frame2.img);
+                stitcher.stitch(frame1.corners, frame2.corners, frame1.descriptors, frame2.descriptors, frame2.img);
+                
             }
         }
 
@@ -111,15 +113,20 @@ int demo_image_stitching(int argc, char* argv[])
         descriptor->compute(frame1.img, frame1.corners, frame1.descriptors);
         
         matcher.radiusMatch(frame1.descriptors, frame2.descriptors, pairs, (float)max_distance + 1.0f);
-        cv::drawMatches(frame1.img, frame1.corners, frame2.img, frame2.corners, pairs, demo_frame);
+        //cv::drawMatches(frame1.img, frame1.corners, frame2.img, frame2.corners, pairs, demo_frame);
 
-        //stitcher.stichedImage(frame1.img, frame1.corners, frame2.img, frame2.corners, pairs, test_frame);
+        stitcher.stichedImage(frame1.img, frame1.corners, frame2.img, frame2.corners, pairs, test_frame);
+        /*if (stitcher.m_isStitched)
+            stitcher.stitch(frame1.corners, frame2.corners, frame1.descriptors, frame2.descriptors, frame2.img);
+        */
+        //cv::imshow(demo_wnd, demo_frame);
+        cv::imshow(test_wnd, test_frame);
 
-        cv::imshow(demo_wnd, demo_frame);
     }
 
     cv::destroyWindow(main_wnd);
     cv::destroyWindow(demo_wnd);
+    cv::destroyWindow(test_wnd);
 
     return 0;
 }
