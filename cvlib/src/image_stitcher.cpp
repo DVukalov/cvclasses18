@@ -42,8 +42,8 @@ void Stitcher::stichedImage(const cv::Mat& frame1, const std::vector<cv::KeyPoin
         c = H.at<double>(0, 2);
         f = H.at<double>(1, 2);
 
-        ///* if (c < 0 && f < 0)
-        //     H = H.inv();*/
+        if (c < 0 && f < 0)
+             H = H.inv();
 
         // // найдем прямоугольник
         // cv::Rect frameRect = cv::boundingRect(point1);
@@ -62,40 +62,28 @@ void Stitcher::stichedImage(const cv::Mat& frame1, const std::vector<cv::KeyPoin
         // получаем размеры исходного изображения
 
        cv::Size size = frame2.size();
-        if (c > 0 && f > 0)
+        if (c >= 0 && f >= 0)
         {
-            std::cout << "c" << c << std::endl;
-            std::cout << "f" << f << std::endl;
-
-            std::cout << size.width << std::endl;
-            std::cout << size.height << std::endl;
             size.width += c;
             size.height += f;
-            std::cout << "After" << std::endl;
-            std::cout << size.width << std::endl;
-            std::cout << size.height << std::endl;
 
-            cv::warpPerspective(frame1, m_stitching_image, H, size, cv::INTER_LINEAR);
+            cv::warpPerspective(frame2, m_stitching_image, H, size);
+            frame1.copyTo(m_stitching_image.rowRange(0, frame1.rows).colRange(0, frame1.cols));
 
-            std::cout << "SIZE = " << m_stitching_image.size() << std::endl;
-            std::cout << "COPY = " << frame2.rows + f << std::endl;;
-            std::cout << "COPY = " << frame2.cols + c << std::endl;
-
-            //frame1.copyTo(m_stitching_image.rowRange(0, frame1.rows).colRange(0, frame1.cols));
-            //frame2.copyTo(m_stitching_image.rowRange(0, frame2.size().height).colRange(0, frame2.size().width));
-            frame2.copyTo(m_stitching_image.rowRange(0, frame2.size().height).colRange(0, frame2.size().width));
+            //cv::warpPerspective(frame1, m_stitching_image, H, size);
+            //frame2.copyTo(m_stitching_image.rowRange(0, frame2.rows).colRange(0, frame2.cols));
             m_isStitched = true;
         }
 
-        //if (c < 0 && f < 0)
-        //{
-        //    size.width -= c;
-        //    size.height -= f;
-        //    cv::warpPerspective(frame1, m_stitching_image, H, size);
-        //    //cv::vconcat(frame2Descriptors, frame1Descriptors, frame2Descriptors);
-        //    //frame2.copyTo(m_stitching_image.rowRange(0, frame2.rows).colRange(0, frame2.cols));
-        //    //m_isStitched = true;
-        //}
+        if (c < 0 && f < 0)
+        {
+            size.width -= c;
+            size.height -= f;
+            cv::warpPerspective(frame1, m_stitching_image, H, size);
+            //cv::vconcat(frame2Descriptors, frame1Descriptors, frame2Descriptors);
+            frame2.copyTo(m_stitching_image.rowRange(0, frame2.rows).colRange(0, frame2.cols));
+            m_isStitched = true;
+        }
         // stitchedImg.copyTo(stitchedImg);
 
         if (m_isStitched)
@@ -118,14 +106,14 @@ void Stitcher::stitch(std::vector<cv::KeyPoint> frame1Corners, std::vector<cv::K
     if (m_isStitched)
     {
         std::vector<cv::KeyPoint> transformCorners;
-        if (c > 0 && f > 0)
+        if (c >= 0 && f >= 0)
         {
             transformKeyPoints(frame2Corners);
         }
-        //else if (c < 0 && f < 0)
-        //{
-        //    transformKeyPoints(frame1Corners);
-        //}
+        else if (c < 0 && f < 0)
+        {
+            transformKeyPoints(frame1Corners);
+        }
 
         frame2Corners.insert(frame2Corners.end(), frame1Corners.begin(), frame1Corners.end());
         cv::vconcat(frame2Descriptors, frame1Descriptors, frame2Descriptors);
